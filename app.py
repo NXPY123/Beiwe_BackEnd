@@ -14,7 +14,7 @@ import proto
 app = Flask(__name__)
 
 
-credentials = service_account.Credentials.from_service_account_file('./google_vision_api/config/beive-354409-0e474f6066a3.json')
+credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
 image = vision_v1.types.Image()
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
