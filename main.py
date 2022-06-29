@@ -15,8 +15,11 @@ from google.cloud.vision import AnnotateFileRequest
 import proto
 from .labels import label
 from .__init__ import client as client
+from .__init__ import create_app
 from flask import render_template,Blueprint
 from flask_login import login_required, current_user
+
+app = create_app() #Point gunicorn to app
 
 
 main = Blueprint('main', __name__)
