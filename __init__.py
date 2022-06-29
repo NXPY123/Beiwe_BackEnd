@@ -12,7 +12,7 @@ from google.protobuf.json_format import MessageToDict
 from google.cloud.vision import AnnotateFileRequest
 import proto
 from .labels import label
-#from models import User
+from .models import User
 from flask_migrate import Migrate
 from flask_login import LoginManager
 
@@ -25,7 +25,13 @@ client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 def create_app():
     app = Flask(__name__)
 
-    
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+    @login_manager.user_loader
+    def load_user(user_id):
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return User.query.get(int(user_id))
 
    
 
@@ -35,16 +41,9 @@ def create_app():
     db.init_app(app) #Instantiate Database with App
     migrate.init_app(app, db) #Inintailize migrations
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
+    
 
-    from .models import User
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(int(user_id))
+   
    
     #Register auth blueprint
     from .auth import auth as auth_blueprint
@@ -55,3 +54,5 @@ def create_app():
     app.register_blueprint(main_blueprint)
 
     return app
+
+

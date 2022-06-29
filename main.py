@@ -1,5 +1,5 @@
 
-from .__init__ import db
+#from .__init__ import db
 from flask import Flask,request,Blueprint
 import io
 import os
@@ -12,14 +12,24 @@ from google.cloud import vision_v1
 from google.protobuf.json_format import MessageToJson
 from google.protobuf.json_format import MessageToDict
 from google.cloud.vision import AnnotateFileRequest
+from google.oauth2 import service_account
 import proto
 from .labels import label
-from .__init__ import client as client
-from .__init__ import create_app
+
+
+from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
 from flask_login import login_required, current_user
 
-app = create_app() #Point gunicorn to app
+
+from .models import User
+
+
+credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
+client = vision_v1.ImageAnnotatorClient(credentials=credentials)
+
+db = SQLAlchemy() 
+
 
 
 main = Blueprint('main', __name__)
@@ -43,3 +53,4 @@ def web_request():
 
     response = label(img_uri,client) #Get response as dict
     return response
+
