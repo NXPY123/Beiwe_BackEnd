@@ -11,8 +11,8 @@ from google.protobuf.json_format import MessageToJson
 from google.protobuf.json_format import MessageToDict
 from google.cloud.vision import AnnotateFileRequest
 import proto
-from .labels import label
-from .models import User
+from labels import label
+from models import User
 from flask_migrate import Migrate
 from flask_login import LoginManager
 
