@@ -14,7 +14,7 @@ from google.protobuf.json_format import MessageToDict
 from google.cloud.vision import AnnotateFileRequest
 from google.oauth2 import service_account
 import proto
-from .labels import label
+from labels import label
 
 
 from flask_sqlalchemy import SQLAlchemy
@@ -22,7 +22,7 @@ from flask import render_template,Blueprint
 from flask_login import login_required, current_user
 
 
-from .models import User
+from models import User
 
 
 credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
