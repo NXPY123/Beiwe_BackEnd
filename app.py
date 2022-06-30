@@ -43,6 +43,7 @@ def web_request():
 '''
 
 from __init__ import create_app,db
-db = SQLAlchemy(app)
+from flask_sqlalchemy import SQLAlchemy
 app = create_app()
+db = SQLAlchemy(app)
 from models import *
