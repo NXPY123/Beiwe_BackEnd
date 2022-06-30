@@ -19,6 +19,8 @@ from flask_login import LoginManager
 db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
 migrate = Migrate() #Instance of Migrations 
 
+ENV = 'prod'
+
 credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
@@ -34,10 +36,13 @@ def create_app():
         return User.query.get(int(user_id))
 
    
-
+    
     app.config['SECRET_KEY'] = 'secret-key-goes-here'  #Client Session Authentication Key
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #Configure Database URI
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://upilzfdcnzbtsj:7181a85cdb0a5be27b7d8377c04652b5e92e5fc0cde15897d97294ebf1e0058f@ec2-3-224-8-189.compute-1.amazonaws.com:5432/d27dj586047kr2'
+    if ENV == 'dev':
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://upilzfdcnzbtsj:7181a85cdb0a5be27b7d8377c04652b5e92e5fc0cde15897d97294ebf1e0058f@ec2-3-224-8-189.compute-1.amazonaws.com:5432/d27dj586047kr2'
 
     db.init_app(app) #Instantiate Database with App
     migrate.init_app(app, db) #Inintailize migrations
