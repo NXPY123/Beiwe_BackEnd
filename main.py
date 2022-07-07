@@ -16,36 +16,33 @@ from google.oauth2 import service_account
 import proto
 from labels import label
 
-
+from app import mongo_black_list_collection
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
 from flask_login import login_required, current_user
 
 
 from models import User
-import pymongo
+
 
 credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
 db = SQLAlchemy() 
 
-MONGO_CONNECTION_STRING = f'mongodb+srv://NXPY123:{os.environ.get("password")}@mongo-beiwei-cluster-mu.7f9ix.mongodb.net/?retryWrites=true&w=majority'
-mongo_client=pymongo.MongoClient(MONGO_CONNECTION_STRING) #Establish connection
-mongo_db=mongo_client.Beiwei # assign database to mongo_db
-mongo_black_list_collection = mongo_db.image_black_list
 
-emp_rec1 = {
-        "name":"Mr.Geek",
-        "eid":24,
-        "location":"delhi"
-        }
-rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
+
 
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
+    emp_rec1 = {
+        "name":"Mr.Geek",
+        "eid":24,
+        "location":"delhi"
+        }
+    rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
     return render_template('index.html')
 
 @main.route('/profile')

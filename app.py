@@ -44,6 +44,13 @@ def web_request():
 
 from __init__ import create_app,db
 from flask_sqlalchemy import SQLAlchemy
+from models import *
+import pymongo
+import os
+
+MONGO_CONNECTION_STRING = f'mongodb+srv://NXPY123:{os.environ.get("mongo_password")}@mongo-beiwei-cluster-mu.7f9ix.mongodb.net/?retryWrites=true&w=majority'
+mongo_client=pymongo.MongoClient(MONGO_CONNECTION_STRING) #Establish connection
+mongo_db=mongo_client.Beiwei # assign database to mongo_db
+mongo_black_list_collection = mongo_db.image_black_list
 app = create_app()
 db = SQLAlchemy(app)
-from models import *
