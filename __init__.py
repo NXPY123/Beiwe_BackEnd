@@ -15,6 +15,8 @@ from labels import label
 from models import User
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from dotenv import load_dotenv
+import pymongo
 
 db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
 migrate = Migrate() #Instance of Migrations 
@@ -23,6 +25,7 @@ ENV = 'prod'
 
 credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
+load_dotenv() # use dotenv to hide sensitive credential as environment variables. load_dotenv() is a function that loads the .env file into the environment
 
 def create_app():
     app = Flask(__name__)
@@ -37,13 +40,16 @@ def create_app():
 
    
     
-    app.config['SECRET_KEY'] = 'secret-key-goes-here'  #Client Session Authentication Key
+    app.config['SECRET_KEY'] = '2bbe896fe65d7214473d25bbf85b817ee9103d491d1f964a'  #Secret Key to encrypty cookies to send to browsers
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #Configure Database URI
     if ENV == 'dev':
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://upilzfdcnzbtsj:7181a85cdb0a5be27b7d8377c04652b5e92e5fc0cde15897d97294ebf1e0058f@ec2-3-224-8-189.compute-1.amazonaws.com:5432/d27dj586047kr2'
 
+   
+    
+    
     db.init_app(app) #Instantiate Database with App
     migrate.init_app(app, db) #Inintailize migrations
 
