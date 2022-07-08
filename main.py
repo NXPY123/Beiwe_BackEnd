@@ -16,7 +16,7 @@ from google.oauth2 import service_account
 import proto
 from labels import label
 
-from app import mongo_black_list_collection
+
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
 from flask_login import login_required, current_user
@@ -37,12 +37,8 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    emp_rec1 = {
-        "name":"Mr.Geek",
-        "eid":24,
-        "location":"delhi"
-        }
-    rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
+    
+    #rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
     return render_template('index.html')
 
 @main.route('/profile')

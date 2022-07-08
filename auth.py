@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from __init__ import db
 from flask_login import login_user, login_required, logout_user
+from app import mongo_black_list_collection #To query and perform CRUD operations on mongo collection
+
 
 auth = Blueprint('auth', __name__)
 
