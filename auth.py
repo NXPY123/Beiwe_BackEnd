@@ -3,8 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from __init__ import db
 from flask_login import login_user, login_required, logout_user
-from app import mongo_black_list_collection #To query and perform CRUD operations on mongo collection
-
+from app import mongo_black_list_collection,mongo_user_labels #To query and perform CRUD operations on mongo collection
+import json
 
 auth = Blueprint('auth', __name__)
 
@@ -62,12 +62,16 @@ def signup_post():
 
     return redirect(url_for('auth.login'))
 
+
+
+
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
     
+
 
 
 

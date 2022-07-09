@@ -65,6 +65,10 @@ def create_app():
     from main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    #Register extension blueprint
+    from extension import extension as extension_blueprint
+    app.register_blueprint(extension_blueprint)
+
     return app
 
 

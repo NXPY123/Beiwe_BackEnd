@@ -52,5 +52,6 @@ MONGO_CONNECTION_STRING = f'mongodb+srv://NXPY123:{os.environ.get("mongo_passwor
 mongo_client=pymongo.MongoClient(MONGO_CONNECTION_STRING) #Establish connection
 mongo_db=mongo_client.Beiwei # assign database to mongo_db
 mongo_black_list_collection = mongo_db.image_black_list #To perform operations on collection
+mongo_user_labels = mongo_db.user_labels
 app = create_app()
 db = SQLAlchemy(app)

@@ -26,7 +26,8 @@ def label(img_uri,client):
     
     serializable_tags = [proto.Message.to_dict(tag) for tag in response.label_annotations] #Convert object to list type
     
+    tags_list = [i['description'] for i in serializable_tags] #Get only description from list
+    
+    return {'tags':tags_list}
     
     
-    return {'serial':serializable_tags}
-    #return render_template('image_label.html',labels=labels)
