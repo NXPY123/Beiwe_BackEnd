@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request,flash
-from numpy import insert 
+from numpy import insert
+from sqlalchemy import false, true 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from __init__ import db
@@ -171,6 +172,18 @@ def get_blocked_img():
     images_json_response = request.args.get('images')
     images_data = json.loads(images_json_response)
 
+    try:
+        if current_user.is_authenticated():
+            name = current_user.name
+            email = current_user.email
+        else:
+            error_json_response = json.dumps({"status":"Image labels not returned","error":'Not logged in'})
+            return error_json_response
+    except Exception as Err:
+        error_json_response = json.dumps({"status":"Image labels not returned","error":Err})
+        return error_json_response        
+
+
     #Request JSON Format
     '''
     {
@@ -184,18 +197,29 @@ def get_blocked_img():
 
     json_list = [labels.label(i,client) for i in img_url_list]
 
-    #JSON Response Format when 3 images passed
-    '''
-    {'labels': [[], 
-    ['Elephant', 'Plant', 'Plant community', 'Sky', 'Ecoregion', 'Vertebrate', 'Nature', 'Working animal', 'Natural landscape', 'African elephant'],
-    ['Dog', 'Plant', 'People in nature', 'Carnivore', 'Dog breed', 'Smile', 'Companion dog', 'Grass', 'Flower', 'Happy']]
-    }
-
-    '''
+    
 
     labels_list = [descr['tags'] for descr in json_list]
-    json_response = json.dumps({'labels':labels_list,'error':'None'})
-    return json_response
+    user_labels = mongo_user_labels.find_one(query={"email":email},projection={"labels"})
+    
+    
+  
+    for image in labels_list:
+        for label in image:
+            if(label in user_labels["labels"] ):
+                image = true # If Image is to be blocked, replace it with true
+                break
+        if(image != true): 
+            image = false # If image shouldn't be blocked
+
+    labels_json_response = json.dumps({"blocked_images":labels_list,"error":"None"})
+    return labels_json_response
+    
+
+
+
+    #json_response = json.dumps({'labels':labels_list,'error':'None'})
+    #return json_response
 
 
 
