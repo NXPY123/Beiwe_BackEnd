@@ -23,7 +23,7 @@ migrate = Migrate() #Instance of Migrations
 
 ENV = 'prod'
 
-credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
+credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 load_dotenv() # use dotenv to hide sensitive credential as environment variables. load_dotenv() is a function that loads the .env file into the environment
 
