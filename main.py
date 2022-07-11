@@ -25,7 +25,7 @@ from flask_login import login_required, current_user
 from models import User
 
 
-credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")))
+credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
 db = SQLAlchemy() 
