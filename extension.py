@@ -10,11 +10,12 @@ import json
 import labels
 from google.oauth2 import service_account
 from google.cloud import vision_v1
+import os
 
 extension = Blueprint('extension', __name__)
 
 
-credentials = service_account.Credentials.from_service_account_file('./config/beive-354409-0e474f6066a3.json')
+credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
 
