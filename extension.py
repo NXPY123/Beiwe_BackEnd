@@ -120,7 +120,7 @@ def extension_logout():
 
 
 @extension.route('/extension/setlabel')
-
+@login_required
 
 def set_label():
 
