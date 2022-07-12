@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request,flash
-from numpy import insert
+from numpy import block, insert
 from sqlalchemy import false, true 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
@@ -204,16 +204,24 @@ def get_blocked_img():
     user_labels = mongo_user_labels.find_one(query={"email":email},projection={"labels"})
     
     
-  
+    blocked_imgs = []
     for image in labels_list:
         for label in image:
             if(label in user_labels["labels"] ):
                 image = true # If Image is to be blocked, replace it with true
+
+                
+
                 break
         if(image != true): 
             image = false # If image shouldn't be blocked
 
-    labels_json_response = json.dumps({"blocked_images":labels_list,"error":"None"})
+    for i in range (0,len(labels_list)):
+        if (labels_list[i] == true):
+            blocked_imgs = blocked_imgs + img_url_list[i]
+
+            
+    labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
     
 
