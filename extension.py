@@ -141,7 +141,7 @@ def set_label():
     labels_list = labels_data["data"]["labels"]
 
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             name = current_user.name
             email = current_user.email
             if(mongo_user_labels.count_documents({"email":email})):
