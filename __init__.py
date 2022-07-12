@@ -17,6 +17,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from dotenv import load_dotenv
 import pymongo
+from flask_cors import CORS
 
 db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
 migrate = Migrate() #Instance of Migrations 
@@ -29,6 +30,7 @@ load_dotenv() # use dotenv to hide sensitive credential as environment variables
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
