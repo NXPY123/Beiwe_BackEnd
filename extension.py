@@ -174,7 +174,7 @@ def get_blocked_img():
     images_data = json.loads(images_json_response)
 
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             name = current_user.name
             email = current_user.email
         else:
