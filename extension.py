@@ -120,7 +120,7 @@ def extension_logout():
 
 
 @extension.route('/extension/setlabel')
-@login_required
+#@login_required
 
 def set_label():
 
@@ -167,7 +167,7 @@ def set_label():
 
 
 @extension.route('/api_call', methods=['GET', 'POST'])
-@login_required
+#@login_required
 
 def get_blocked_img():
     images_json_response = request.args.get('images')
