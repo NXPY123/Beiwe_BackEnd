@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request,flash
 from numpy import block, insert
+from requests import session
 from sqlalchemy import false, true 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
@@ -11,6 +12,9 @@ import labels
 from google.oauth2 import service_account
 from google.cloud import vision_v1
 import os
+import string
+import random
+
 
 extension = Blueprint('extension', __name__)
 
@@ -101,7 +105,10 @@ def extension_login():
 
         # if the above check passes, then we know the user has the right credentials
         login_user(user, remember=remember)
-        logged_in_response_json = json.dumps({'status':"Logged in",'error':"None"})
+        session_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) #Add session key to database
+        user.session = session_key
+        session.commit()
+        logged_in_response_json = json.dumps({'status':"Logged in",'error':"None",'session_key':session_key})
         return logged_in_response_json
     
     except Exception as Err:
@@ -111,11 +118,48 @@ def extension_login():
 
 
 
+
+
 @extension.route('/extension/logout')
-@login_required
+#@login_required
 
 def extension_logout():
     logout_user()
+    logout_json_response = request.args.get('logout_data')
+    logout_data = json.loads(logout_json_response)
+
+    #Request Format:
+    '''
+    {
+
+        "data":{
+            "email":
+            "session_key":        
+
+        }
+
+
+    }
+    '''
+
+    email = logout_data['data']['email']
+    session_key = logout_data['data']['session_key']
+
+    try:
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user or not user.session==session_key:
+            not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':"User credentials don't match"})
+            return not_logged_out_response_json # if the user doesn't exist or session key is wrong
+
+    except Exception as Err:
+
+        not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':Err})
+        return not_logged_out_response_json 
+
+
+
 
 
 
@@ -134,16 +178,21 @@ def set_label():
 
         "data":{
             "labels":[]
+            "email":
+            "session_key":
         }
 
     }
     '''
     labels_list = labels_data["data"]["labels"]
+    email = labels_data["data"]["email"]
+    session_key = labels_data["data"]["session_key"]
 
     try:
-        if current_user.is_authenticated:
-            name = current_user.name
-            email = current_user.email
+        user = User.query.filter_by(email=email).first()
+        if user and user.session == session_key:
+            name = user.name
+            #email = user.email
             if(mongo_user_labels.count_documents({"email":email})):
                 record = mongo_user_labels.find_one_and_update(filter={"email":email},update={ '$set': { "labels" : labels_list} })
             else:
@@ -172,11 +221,15 @@ def set_label():
 def get_blocked_img():
     images_json_response = request.args.get('images')
     images_data = json.loads(images_json_response)
+    email = images_data["data"]["email"]
+    session_key = images_data["data"]["session_key"]
+
 
     try:
-        if current_user.is_authenticated:
-            name = current_user.name
-            email = current_user.email
+        user = User.query.filter_by(email=email).first()
+        if user and user.session == session_key:
+            name = user.name
+            
         else:
             error_json_response = json.dumps({"status":"Image labels not returned","error":'Not logged in'})
             return error_json_response
@@ -190,6 +243,8 @@ def get_blocked_img():
     {
         "data":{
             "img_urls":[]
+            "email":
+            "session_key":
         }
     }
     
