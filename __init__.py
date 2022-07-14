@@ -47,7 +47,7 @@ def create_app():
     if ENV == 'dev':
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://upilzfdcnzbtsj:7181a85cdb0a5be27b7d8377c04652b5e92e5fc0cde15897d97294ebf1e0058f@ec2-3-224-8-189.compute-1.amazonaws.com:5432/d27dj586047kr2'
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://eznsasbunpcmap:3c98cd73aad29aaf589ef47e50132d4d8052c5602d18242305178653237301f9@ec2-3-219-229-143.compute-1.amazonaws.com:5432/dbbilt1chdg4kn'
 
    
     
