@@ -41,15 +41,15 @@ def index():
     #rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
     return render_template('index.html')
 
-'''
+
 
 @main.route('/profile')
 #@login_required
 def profile():
     
-    return render_template('profile.html',name=current_user.name)
+    return render_template('profile.html',name="NPY")
 
-'''
+
 @main.route('/website',endpoint = 'label', methods=['GET', 'POST'])
 #@login_required
 def web_request():
