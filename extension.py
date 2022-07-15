@@ -117,7 +117,7 @@ def extension_login():
     
     except Exception as Err:
 
-        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':Err})
+        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':'Err'})
         return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
 
@@ -159,7 +159,7 @@ def extension_logout():
 
     except Exception as Err:
 
-        not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':Err})
+        not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':'Err'})
         return not_logged_out_response_json 
 
 
@@ -213,7 +213,7 @@ def set_label():
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
             return labels_json_response
     except Exception as Err:
-        error_json_response = json.dumps({"status":"Error","error":Err})
+        error_json_response = json.dumps({"status":"Error","error":'Err'})
         return error_json_response
 
 
@@ -238,7 +238,7 @@ def get_blocked_img():
             error_json_response = json.dumps({"status":"Image labels not returned","error":'Not logged in'})
             return error_json_response
     except Exception as Err:
-        error_json_response = json.dumps({"status":"Image labels not returned","error":Err})
+        error_json_response = json.dumps({"status":"Image labels not returned","error":'Err'})
         return error_json_response        
 
 
