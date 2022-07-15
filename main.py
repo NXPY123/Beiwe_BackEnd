@@ -19,10 +19,10 @@ from labels import label
 
 #from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
-from flask_login import login_required, current_user
+#from flask_login import login_required, current_user
 
 
-from models import User
+#from models import User
 
 
 credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
