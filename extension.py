@@ -117,7 +117,7 @@ def extension_login():
     
     except Exception as Err:
 
-        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':'Err'})
+        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':Err.message})
         return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
 
