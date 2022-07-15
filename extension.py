@@ -287,7 +287,7 @@ def get_blocked_img():
 
                 
                 break
-            
+    blocked_imgs = list(set(blocked_imgs)) #Remove duplicates
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
     
