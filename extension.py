@@ -263,30 +263,52 @@ def get_blocked_img():
             "img_urls":[]
             "email":
             "session_key":
+            "website":
         }
     }
     
     '''
     img_url_list = images_data["data"]["img_urls"]
-
+    user_labels = mongo_user_labels.find_one({"email":email})
+    website = images_data["data"]["website"]
+    blocked_imgs = []
+    for label in user_labels["labels"]:
+        black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
+        blocked_imgs.extend(black_list_document["img_urls"])
+        img_url_list = [x for x in img_url_list if x not in blocked_imgs]
+        
     tag_list = [labels.label(i,client) for i in img_url_list]
 
     
 
     labels_list = [elem['tags'] for elem in tag_list]
-    user_labels = mongo_user_labels.find_one({"email":email})
     
     
-    blocked_imgs = []
+    
+   
     for index,img_list in enumerate(labels_list):
         for label in img_list:
             # print(label)
             if(label in user_labels["labels"] ):
                 # print(labels_list.index(img_list))
+                if(mongo_black_list_collection.count_documents({"website":website,"label":label}):
+                   black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
+                   img_urls = black_list_document["img_urls"]
+                   img_urls.append(img_url_list[index])
+                   record = mongo_black_list_collection.find_one_and_update({"website":website,"label":label},{ '$set': { "img_urls" : img_urls} })
+                else:
+                   img_list = [img_url_list[index]]
+                   rec = {
+                       "label":label
+                       "website":website
+                       "img_urls":img_list
+                   }
+                   mongo_black_list_collection.insert_one(rec)
+                   
                 blocked_imgs.append(img_url_list[index]) # If Image is to be blocked, append it
 
                 
-                break
+                
     blocked_imgs = list(set(blocked_imgs)) #Remove duplicates
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
