@@ -193,7 +193,7 @@ def set_label():
     session_key = labels_data["data"]["session_key"]
 
     try:
-        user = mongo_user.find_one({"email":email},{"labels"})
+        user = mongo_user.find_one({"email":email})
         if user and user['session']==session_key:
             name = user['name']
             #email = user.email
@@ -230,7 +230,7 @@ def get_blocked_img():
 
 
     try:
-        user = mongo_user.find_one(query={"email":email})
+        user = mongo_user.find_one({"email":email})
         if user and user['session'] == session_key:
             name = user['name']
             
@@ -260,7 +260,7 @@ def get_blocked_img():
     
 
     labels_list = [descr['tags'] for descr in json_list]
-    user_labels = mongo_user_labels.find_one(query={"email":email},projection={"labels"})
+    user_labels = mongo_user_labels.find_one({"email":email})
     
     
     blocked_imgs = []
