@@ -17,7 +17,7 @@ import proto
 from labels import label
 
 
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
 from flask_login import login_required, current_user
 
@@ -28,7 +28,7 @@ from models import User
 credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
-db = SQLAlchemy() 
+#db = SQLAlchemy() 
 
 
 
@@ -41,15 +41,17 @@ def index():
     #rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
     return render_template('index.html')
 
+'''
+
 @main.route('/profile')
-@login_required
+#@login_required
 def profile():
     
     return render_template('profile.html',name=current_user.name)
 
-
+'''
 @main.route('/website',endpoint = 'label', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def web_request():
 
     img_uri = request.args.get('params') 

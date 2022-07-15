@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, request,flash
 from numpy import block, insert
-from requests import session
-from sqlalchemy import false, true 
+#from requests import session
+#from sqlalchemy import false, true 
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
-from __init__ import db
-from flask_login import login_user, login_required, logout_user,current_user
-from app import mongo_black_list_collection,mongo_user_labels #To query and perform CRUD operations on mongo collection
+#from models import User
+#from __init__ import db
+#from flask_login import login_user, login_required, logout_user,current_user
+from app import mongo_black_list_collection,mongo_user_labels,mongo_user #To query and perform CRUD operations on mongo collection
 import json
 import labels
 from google.oauth2 import service_account
@@ -44,18 +44,22 @@ def extension_signup():
     password = signup_data['data']['password']
 
     try:
-        user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
+        
 
-        if user: # if a user is found, we want to redirect back to signup page so user can try again
+        if mongo_user.count_documents({"email":email}): # if a user is found, we want to redirect back to signup page so user can try again
             user_exists_response_json = json.dumps({'error':"User already exists",'status':"User not created"})
             return user_exists_response_json
 
         # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-        new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
-
+        new_user = {
+            "email":email,
+            "name":name,
+            "password":generate_password_hash(password, method='sha256'),
+            "session":"None"
+        }
+        mongo_user.insert_one(new_user)
         # add the new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+       
 
         user_created_response_json = json.dumps({'status':"User Created",'error':"None"})
         return user_created_response_json
@@ -95,19 +99,19 @@ def extension_login():
     remember = True 
 
     try:
-        user = User.query.filter_by(email=email).first()
+        user = mongo_user.find_one(query={"email":email})
 
         # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if not user or not check_password_hash(user.password, password):
+        if not user or not check_password_hash(user['password'], password):
             not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':"User credentials don't match"})
             return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
         # if the above check passes, then we know the user has the right credentials
-        login_user(user, remember=remember)
+       
         session_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) #Add session key to database
-        user.session = session_key
-        session.commit()
+        #user["session"] = session_key
+        mongo_user.update_one({"email":email},{"$set":{"session":session_key}})
         logged_in_response_json = json.dumps({'status':"Logged in",'error':"None",'session_key':session_key})
         return logged_in_response_json
     
@@ -124,7 +128,7 @@ def extension_login():
 #@login_required
 
 def extension_logout():
-    logout_user()
+    
     logout_json_response = request.args.get('logout_data')
     logout_data = json.loads(logout_json_response)
 
@@ -147,9 +151,9 @@ def extension_logout():
 
     try:
 
-        user = User.query.filter_by(email=email).first()
+        user = mongo_user.find_one(query={"email":email})
 
-        if not user or not user.session==session_key:
+        if not user or not user['session'] == session_key:
             not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':"User credentials don't match"})
             return not_logged_out_response_json # if the user doesn't exist or session key is wrong
 
@@ -189,9 +193,9 @@ def set_label():
     session_key = labels_data["data"]["session_key"]
 
     try:
-        user = User.query.filter_by(email=email).first()
-        if user and user.session == session_key:
-            name = user.name
+        user = mongo_user.find_one(query={"email":email},projection={"labels"})
+        if user and user['session']==session_key:
+            name = user['name']
             #email = user.email
             if(mongo_user_labels.count_documents({"email":email})):
                 record = mongo_user_labels.find_one_and_update(filter={"email":email},update={ '$set': { "labels" : labels_list} })
@@ -226,9 +230,9 @@ def get_blocked_img():
 
 
     try:
-        user = User.query.filter_by(email=email).first()
-        if user and user.session == session_key:
-            name = user.name
+        user = mongo_user.find_one(query={"email":email})
+        if user and user['session'] == session_key:
+            name = user['name']
             
         else:
             error_json_response = json.dumps({"status":"Image labels not returned","error":'Not logged in'})
@@ -263,16 +267,16 @@ def get_blocked_img():
     for image in labels_list:
         for label in image:
             if(label in user_labels["labels"] ):
-                image = true # If Image is to be blocked, replace it with true
+                image = 1 # If Image is to be blocked, replace it with true
 
                 
 
                 break
-        if(image != true): 
-            image = false # If image shouldn't be blocked
+        if(image != 1): 
+            image = 0 # If image shouldn't be blocked
 
     for i in range (0,len(labels_list)):
-        if (labels_list[i] == true):
+        if (labels_list[i] == 1):
             blocked_imgs = blocked_imgs + img_url_list[i]
 
             
@@ -288,6 +292,17 @@ def get_blocked_img():
 
 
     
+    '''
+    mongo_user:
+
+    {
+        "email":
+        "name":
+        "password":
+        "session":
+    }
+    
+    '''
 
 
 
