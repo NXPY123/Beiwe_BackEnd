@@ -103,7 +103,7 @@ def extension_login():
 
         # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if not user or not check_password_hash(user['password'], password):
+        if not mongo_user.count_documents({"email":email}) or not check_password_hash(user['password'], password):
             not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':"User credentials don't match"})
             return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
