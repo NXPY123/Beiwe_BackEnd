@@ -223,7 +223,7 @@ def set_label():
 
 
 
-@extension.route('/api_call', methods=['GET', 'POST'])
+@extension.route('/extension/api_call', methods=['GET', 'POST'])
 #@login_required
 
 def get_blocked_img():
