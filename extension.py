@@ -259,30 +259,24 @@ def get_blocked_img():
     '''
     img_url_list = images_data["data"]["img_urls"]
 
-    json_list = [labels.label(i,client) for i in img_url_list]
+    tag_list = [labels.label(i,client) for i in img_url_list]
 
     
 
-    labels_list = [descr['tags'] for descr in json_list]
+    labels_list = [elem['tags'] for elem in tag_list]
     user_labels = mongo_user_labels.find_one({"email":email})
     
     
     blocked_imgs = []
-    for image in labels_list:
-        for label in image:
+    for index,img_list in enumerate(labels_list):
+        for label in img_list:
+            # print(label)
             if(label in user_labels["labels"] ):
-                image = 1 # If Image is to be blocked, replace it with true
+                # print(labels_list.index(img_list))
+                blocked_imgs.append(img_url_list[index]) # If Image is to be blocked, append it
 
                 
-
                 break
-        if(image != 1): 
-            image = 0 # If image shouldn't be blocked
-
-    for i in range (0,len(labels_list)):
-        if (labels_list[i] == 1):
-            blocked_imgs = blocked_imgs + img_url_list[i]
-
             
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
