@@ -156,6 +156,10 @@ def extension_logout():
         if not user or not user['session'] == session_key:
             not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':"User credentials don't match"})
             return not_logged_out_response_json # if the user doesn't exist or session key is wrong
+        random_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) #Replace session_key with random string
+        record = mongo_user.find_one_and_update({"email":email},{ '$set': { "session" : random_key} })
+        logged_out_response_json = json.dumps({'status':"logged out",'error':"None"})
+        return logged_out_response_json # if the user is logged out
 
     except Exception as Err:
 
