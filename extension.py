@@ -14,7 +14,7 @@ from google.cloud import vision_v1
 import os
 import string
 import random
-
+import csv
 
 extension = Blueprint('extension', __name__)
 
@@ -201,17 +201,27 @@ def set_label():
         if user and user['session']==session_key:
             name = user['name']
             #email = user.email
+            missing = []
+            correct_labels = []
+            with open('google_labels.csv', 'r') as fp:
+                s = fp.read()
+                for label in labels_list:
+                    if label not in s:
+                        missing.append(label)
+                    else:
+                        correct_labels.append(label)
+                        
             if(mongo_user_labels.count_documents({"email":email})):
-                record = mongo_user_labels.find_one_and_update({"email":email},{ '$set': { "labels" : labels_list} })
+                record = mongo_user_labels.find_one_and_update({"email":email},{ '$set': { "labels" : correct_labels} })
             else:
                 insert_rec = {
                     "name":name,
                     "email":email,
-                    "labels":labels_list
+                    "labels":correct_labels
                     
                 }
                 record = mongo_user_labels.insert_one(insert_rec)
-            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None"})
+            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing})
             return labels_json_response
         else:
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
