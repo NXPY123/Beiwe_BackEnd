@@ -99,7 +99,7 @@ def extension_login():
     remember = True 
 
     try:
-        user = mongo_user.find_one(query={"email":email})
+        user = mongo_user.find_one({"email":email})
 
         # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
@@ -151,7 +151,7 @@ def extension_logout():
 
     try:
 
-        user = mongo_user.find_one(query={"email":email})
+        user = mongo_user.find_one({"email":email})
 
         if not user or not user['session'] == session_key:
             not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':"User credentials don't match"})
@@ -193,12 +193,12 @@ def set_label():
     session_key = labels_data["data"]["session_key"]
 
     try:
-        user = mongo_user.find_one(query={"email":email},projection={"labels"})
+        user = mongo_user.find_one({"email":email},{"labels"})
         if user and user['session']==session_key:
             name = user['name']
             #email = user.email
             if(mongo_user_labels.count_documents({"email":email})):
-                record = mongo_user_labels.find_one_and_update(filter={"email":email},update={ '$set': { "labels" : labels_list} })
+                record = mongo_user_labels.find_one_and_update({"email":email},{ '$set': { "labels" : labels_list} })
             else:
                 insert_rec = {
                     "name":name,
