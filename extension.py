@@ -274,7 +274,7 @@ def get_blocked_img():
     user_labels = mongo_user_labels.find_one({"email":email})
     website = images_data["data"]["website"]
     blocked_imgs = []
-    user_labels["labels"] = [label.lower() for label in user_labels["labels"]
+    user_labels["labels"] = [label.lower() for label in user_labels["labels"]]
     for label in user_labels["labels"]:
         black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
         if(black_list_document):
