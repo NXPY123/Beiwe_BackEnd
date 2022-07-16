@@ -289,9 +289,9 @@ def get_blocked_img():
     for index,img_list in enumerate(labels_list):
         for label in img_list:
             # print(label)
-            if(label in user_labels["labels"] ):
+            if label in user_labels["labels"]:
                 # print(labels_list.index(img_list))
-                if(mongo_black_list_collection.count_documents({"website":website,"label":label}):
+                if (mongo_black_list_collection.count_documents({"website":website,"label":label}):
                    black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
                    img_urls = black_list_document["img_urls"]
                    img_urls.append(img_url_list[index])
