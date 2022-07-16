@@ -269,26 +269,54 @@ def get_blocked_img():
     
     '''
     img_url_list = images_data["data"]["img_urls"]
+    print("img_url_list :")
+    print(img_url_list)
+    print(" ")
     user_labels = mongo_user_labels.find_one({"email":email})
+    print("user_labels :")
+    print(user_labels)
+    print(" ")
+
     website = images_data["data"]["website"]
+    print("website :")
+    print(website)
+    print(" ")
+
     blocked_imgs = []
     for label in user_labels["labels"]:
         black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
         if(black_list_document):
             blocked_imgs.extend(black_list_document["img_urls"])
+            print("blocked_imgs :")
+            print(blocked_imgs)
+            print(" ")
             img_url_list = [x for x in img_url_list if x not in blocked_imgs]
+            print("img_url_list :")
+            print(img_url_list)
+            print(" ")
+
         
     tag_list = [labels.label(i,client) for i in img_url_list]
+    print("tag_list :")
+    print(tag_list)
+    print(" ")
 
     
 
     labels_list = [elem['tags'] for elem in tag_list]
+    print("labels_list :")
+    print(labels_list)
+    print(" ")
+
     
     
     
    
     for index,img_list in enumerate(labels_list):
         for label in img_list:
+            print("label :")
+            print(label)
+            print(" ")
             # print(label)
             if label in user_labels["labels"]:
                 # print(labels_list.index(img_list))
@@ -311,6 +339,9 @@ def get_blocked_img():
                 
                 
     blocked_imgs = list(set(blocked_imgs)) #Remove duplicates
+    print("blocked_imgs :")
+    print(blocked_imgs)
+    print(" ")
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
     
