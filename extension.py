@@ -299,8 +299,8 @@ def get_blocked_img():
                 else:
                    img_list = [img_url_list[index]]
                    rec = {
-                       "label":label
-                       "website":website
+                       "label":label,
+                       "website":website,
                        "img_urls":img_list
                    }
                    mongo_black_list_collection.insert_one(rec)
