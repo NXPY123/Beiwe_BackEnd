@@ -274,8 +274,9 @@ def get_blocked_img():
     blocked_imgs = []
     for label in user_labels["labels"]:
         black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
-        blocked_imgs.extend(black_list_document["img_urls"])
-        img_url_list = [x for x in img_url_list if x not in blocked_imgs]
+        if(black_list_document):
+            blocked_imgs.extend(black_list_document["img_urls"])
+            img_url_list = [x for x in img_url_list if x not in blocked_imgs]
         
     tag_list = [labels.label(i,client) for i in img_url_list]
 
