@@ -204,11 +204,13 @@ def set_label():
             missing = []
             correct_labels = []
             with open('google_labels.csv', 'r') as fp:
-                s = fp.read()
+                s = csv.reader(fp)
+                s = list(s)
                 for label in labels_list:
-                    if label not in s:
+                    if [label+";"] not in s:
                         missing.append(label)
                     else:
+                        label = label.lower()
                         correct_labels.append(label)
                         
             if(mongo_user_labels.count_documents({"email":email})):
@@ -272,6 +274,7 @@ def get_blocked_img():
     user_labels = mongo_user_labels.find_one({"email":email})
     website = images_data["data"]["website"]
     blocked_imgs = []
+    user_labels["labels"] = [label.lower() for label in user_labels["labels"]
     for label in user_labels["labels"]:
         black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
         if(black_list_document):
@@ -290,7 +293,7 @@ def get_blocked_img():
     for index,img_list in enumerate(labels_list):
         for label in img_list:
             # print(label)
-            if label in user_labels["labels"]:
+            if label.lower() in user_labels["labels"]:
                 # print(labels_list.index(img_list))
                 if (mongo_black_list_collection.count_documents({"website":website,"label":label})):
                    black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
