@@ -239,7 +239,7 @@ def set_label():
 #@login_required
 
 def get_blocked_img():
-    images_json_response = request.get_json()
+    images_json_response = request.get_json(force = True)
     print(images_json_response)
     images_data = json.loads(images_json_response)
     email = images_data["data"]["email"]
