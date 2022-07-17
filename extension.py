@@ -296,7 +296,7 @@ def get_blocked_img():
     
     print(labels_list)
     #for index,img_list in enumerate(labels_list):
-    for i in range (0,len(img_url_list):
+    for i in range (0,len(img_url_list)):
         for label in labels_list[i]:
             #print(label)
             if label.lower() in user_labels["labels"]:
