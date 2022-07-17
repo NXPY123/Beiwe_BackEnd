@@ -273,6 +273,8 @@ def get_blocked_img():
     
     '''
     img_url_list = images_data["data"]["img_urls"]
+    print("img_url_list :")
+    print(img_url_list)
     user_labels = mongo_user_labels.find_one({"email":email})
     website = images_data["data"]["website"]
     blocked_imgs = []
