@@ -239,7 +239,7 @@ def set_label():
 #@login_required
 
 def get_blocked_img():
-    images_json_response = request.POST.get('images')
+    images_json_response = request.form.get('images')
     images_data = json.loads(images_json_response)
     email = images_data["data"]["email"]
     session_key = images_data["data"]["session_key"]
