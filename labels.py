@@ -17,9 +17,12 @@ def label(img_uri,client):
     
 
     image = vision_v1.types.Image() #Image Object
-   
+    print("img_uri passed: ")
+    print(img_uri)
     image.source.image_uri = img_uri #To get image from img_link
     response = client.label_detection(image=image) #Detect Labels
+    print("response: ")
+    print(response)
     
     
    
