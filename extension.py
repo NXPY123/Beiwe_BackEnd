@@ -284,7 +284,8 @@ def get_blocked_img():
             img_url_list = [x for x in img_url_list if x not in blocked_imgs]
         
     tag_list = [labels.label(i,client) for i in img_url_list]
-
+    print("tag_list")
+    print(tag_list)
     
 
     labels_list = [elem['tags'] for elem in tag_list]
