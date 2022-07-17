@@ -295,18 +295,19 @@ def get_blocked_img():
     
     
     print(labels_list)
-    for index,img_list in enumerate(labels_list):
-        for label in img_list:
+    #for index,img_list in enumerate(labels_list):
+    for i in range (0,len(img_url_list):
+        for label in labels_list[i]:
             #print(label)
             if label.lower() in user_labels["labels"]:
                 # print(labels_list.index(img_list))
                 if (mongo_black_list_collection.count_documents({"website":website,"label":label})):
                    black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
                    img_urls = black_list_document["img_urls"]
-                   img_urls.append(img_url_list[index])
+                   img_urls.append(img_url_list[i])
                    record = mongo_black_list_collection.find_one_and_update({"website":website,"label":label},{ '$set': { "img_urls" : img_urls} })
                 else:
-                   img_list = [img_url_list[index]]
+                   img_list = [img_url_list[i]]
                    rec = {
                        "label":label,
                        "website":website,
@@ -314,7 +315,7 @@ def get_blocked_img():
                    }
                    mongo_black_list_collection.insert_one(rec)
                    
-                blocked_imgs.append(img_url_list[index]) # If Image is to be blocked, append it
+                blocked_imgs.append(img_url_list[i]) # If Image is to be blocked, append it
 
                 
     print(blocked_imgs)
