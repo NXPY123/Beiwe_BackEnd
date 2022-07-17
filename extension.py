@@ -291,10 +291,10 @@ def get_blocked_img():
     
     
     
-   
+    print(labels_list)
     for index,img_list in enumerate(labels_list):
         for label in img_list:
-            # print(label)
+            #print(label)
             if label.lower() in user_labels["labels"]:
                 # print(labels_list.index(img_list))
                 if (mongo_black_list_collection.count_documents({"website":website,"label":label})):
@@ -314,7 +314,7 @@ def get_blocked_img():
                 blocked_imgs.append(img_url_list[index]) # If Image is to be blocked, append it
 
                 
-                
+    print(blocked_imgs)
     blocked_imgs = list(set(blocked_imgs)) #Remove duplicates
     print(blocked_imgs)
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
