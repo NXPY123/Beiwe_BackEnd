@@ -15,6 +15,7 @@ import os
 import string
 import random
 import csv
+from nltk.corpus import wordnet
 
 extension = Blueprint('extension', __name__)
 
@@ -202,12 +203,18 @@ def set_label():
             name = user['name']
             #email = user.email
             missing = []
+            label_suggestions = [] #Suggestions for missing user labels using nltk.wordnet
             correct_labels = []
             with open('google_labels.csv', 'r') as fp:
                 s = csv.reader(fp)
                 s = list(s)
                 for label in labels_list:
                     if [label+";"] not in s:
+                        syns = wordnet.synsets(label)
+                        syns = [i.lemmas()[0].name() for i in syns]
+                        syns = list(set(syns))
+                        syns = [i for i in syns if i+';' in s]
+                        label_suggestions.append(syns)
                         missing.append(label)
                     else:
                         label = label.lower()
@@ -223,7 +230,7 @@ def set_label():
                     
                 }
                 record = mongo_user_labels.insert_one(insert_rec)
-            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing})
+            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing,"suggestions":label_suggestions})
             return labels_json_response
         else:
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
