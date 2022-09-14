@@ -217,6 +217,17 @@ def set_label():
                         label_suggestions.append(syns)
                         missing.append(label)
                     else:
+                        with open('labels_possible_suggested.csv', newline='') as csvfile:
+                            flag = 0
+                            reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+                            for row in reader:
+                                if(label==row[0]):
+                                    possible_additional_labels.append(row[1:])
+                                    flag = 1
+                                    break
+
+                            if(flag == 0):
+                                possible_additional_labels.append(['']*11)
                         label = label.lower()
                         correct_labels.append(label)
                         
@@ -230,7 +241,7 @@ def set_label():
                     
                 }
                 record = mongo_user_labels.insert_one(insert_rec)
-            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing,"suggestions":label_suggestions})
+            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing,"suggestions":label_suggestions,"additional_labels":possible_additional_labels})
             return labels_json_response
         else:
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
