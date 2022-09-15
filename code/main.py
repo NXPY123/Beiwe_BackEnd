@@ -46,7 +46,7 @@ def index():
 #@login_required
 def profile():
     
-    
+    profile_path = 'profile.html'
     return render_template('profile.html',name="NPY")
 
 
