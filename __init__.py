@@ -44,11 +44,6 @@ def create_app():
     
     app.config['SECRET_KEY'] = '2bbe896fe65d7214473d25bbf85b817ee9103d491d1f964a'  #Secret Key to encrypty cookies to send to browsers
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite' #Configure Database URI
-    if ENV == 'dev':
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-    else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://eznsasbunpcmap:3c98cd73aad29aaf589ef47e50132d4d8052c5602d18242305178653237301f9@ec2-3-219-229-143.compute-1.amazonaws.com:5432/dbbilt1chdg4kn'
-
    
     
     
