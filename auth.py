@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request,flash 
+'''from flask import Blueprint, render_template, redirect, url_for, request,flash 
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User
 from __init__ import db
@@ -71,7 +71,7 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
     
-
+'''
 
 
 

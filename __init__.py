@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from flask import Flask,request
 import io
 import os
@@ -12,15 +12,15 @@ from google.protobuf.json_format import MessageToDict
 from google.cloud.vision import AnnotateFileRequest
 import proto
 from labels import label
-from models import User
-from flask_migrate import Migrate
-from flask_login import LoginManager
+#from models import User
+#from flask_migrate import Migrate
+#from flask_login import LoginManager
 from dotenv import load_dotenv
 import pymongo
 from flask_cors import CORS
 
-db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
-migrate = Migrate() #Instance of Migrations 
+#db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
+#migrate = Migrate() #Instance of Migrations 
 
 ENV = 'prod'
 
@@ -32,13 +32,13 @@ def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
-    login_manager.init_app(app)
-    @login_manager.user_loader
-    def load_user(user_id):
+    #login_manager = LoginManager()
+    #login_manager.login_view = 'auth.login'
+    #login_manager.init_app(app)
+    #@login_manager.user_loader
+    #def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(int(user_id))
+    #    return User.query.get(int(user_id))
 
    
     
@@ -52,16 +52,16 @@ def create_app():
    
     
     
-    db.init_app(app) #Instantiate Database with App
-    migrate.init_app(app, db) #Inintailize migrations
+    #db.init_app(app) #Instantiate Database with App
+    #migrate.init_app(app, db) #Inintailize migrations
 
     
 
    
    
     #Register auth blueprint
-    from auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+    #from auth import auth as auth_blueprint
+    #app.register_blueprint(auth_blueprint)
 
     #Register main blueprint
     from main import main as main_blueprint

@@ -1,4 +1,5 @@
 #from .__init__ import db
+'''
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
@@ -9,3 +10,5 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     session = db.Column(db.String(1000))
+
+'''

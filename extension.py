@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, request,flash
 from numpy import block, insert
-from requests import session
-from sqlalchemy import false, true 
+#from requests import session
+#from sqlalchemy import false, true 
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
-from __init__ import db
-from flask_login import login_user, login_required, logout_user,current_user
-from app import mongo_black_list_collection,mongo_user_labels #To query and perform CRUD operations on mongo collection
+#from models import User
+#from __init__ import db
+#from flask_login import login_user, login_required, logout_user,current_user
+from app import mongo_black_list_collection,mongo_user_labels,mongo_user #To query and perform CRUD operations on mongo collection
 import json
 import labels
 from google.oauth2 import service_account
@@ -14,7 +14,8 @@ from google.cloud import vision_v1
 import os
 import string
 import random
-
+import csv
+from nltk.corpus import wordnet
 
 extension = Blueprint('extension', __name__)
 
@@ -44,18 +45,22 @@ def extension_signup():
     password = signup_data['data']['password']
 
     try:
-        user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
+        
 
-        if user: # if a user is found, we want to redirect back to signup page so user can try again
+        if mongo_user.count_documents({"email":email}): # if a user is found, we want to redirect back to signup page so user can try again
             user_exists_response_json = json.dumps({'error':"User already exists",'status':"User not created"})
             return user_exists_response_json
 
         # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-        new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
-
+        new_user = {
+            "email":email,
+            "name":name,
+            "password":generate_password_hash(password, method='sha256'),
+            "session":"None"
+        }
+        mongo_user.insert_one(new_user)
         # add the new user to the database
-        db.session.add(new_user)
-        db.session.commit()
+       
 
         user_created_response_json = json.dumps({'status':"User Created",'error':"None"})
         return user_created_response_json
@@ -95,25 +100,25 @@ def extension_login():
     remember = True 
 
     try:
-        user = User.query.filter_by(email=email).first()
+        user = mongo_user.find_one({"email":email})
 
         # check if the user actually exists
         # take the user-supplied password, hash it, and compare it to the hashed password in the database
-        if not user or not check_password_hash(user.password, password):
+        if not mongo_user.count_documents({"email":email}) or not check_password_hash(user['password'], password):
             not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':"User credentials don't match"})
             return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
         # if the above check passes, then we know the user has the right credentials
-        login_user(user, remember=remember)
+       
         session_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) #Add session key to database
-        user.session = session_key
-        session.commit()
+        #user["session"] = session_key
+        mongo_user.update_one({"email":email},{"$set":{"session":session_key}})
         logged_in_response_json = json.dumps({'status':"Logged in",'error':"None",'session_key':session_key})
         return logged_in_response_json
     
     except Exception as Err:
 
-        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':Err})
+        not_logged_in_response_json = json.dumps({'status':"Not logged in",'error':'Err'})
         return not_logged_in_response_json # if the user doesn't exist or password is wrong
 
 
@@ -124,7 +129,7 @@ def extension_login():
 #@login_required
 
 def extension_logout():
-    logout_user()
+    
     logout_json_response = request.args.get('logout_data')
     logout_data = json.loads(logout_json_response)
 
@@ -147,15 +152,19 @@ def extension_logout():
 
     try:
 
-        user = User.query.filter_by(email=email).first()
+        user = mongo_user.find_one({"email":email})
 
-        if not user or not user.session==session_key:
+        if not user or not user['session'] == session_key:
             not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':"User credentials don't match"})
             return not_logged_out_response_json # if the user doesn't exist or session key is wrong
+        random_key = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7)) #Replace session_key with random string
+        record = mongo_user.find_one_and_update({"email":email},{ '$set': { "session" : random_key} })
+        logged_out_response_json = json.dumps({'status':"logged out",'error':"None"})
+        return logged_out_response_json # if the user is logged out
 
     except Exception as Err:
 
-        not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':Err})
+        not_logged_out_response_json = json.dumps({'status':"Not logged out",'error':'Err'})
         return not_logged_out_response_json 
 
 
@@ -189,52 +198,83 @@ def set_label():
     session_key = labels_data["data"]["session_key"]
 
     try:
-        user = User.query.filter_by(email=email).first()
-        if user and user.session == session_key:
-            name = user.name
+        user = mongo_user.find_one({"email":email})
+        if user and user['session']==session_key:
+            name = user['name']
             #email = user.email
+            missing = []
+            label_suggestions = [] #Suggestions for missing user labels using nltk.wordnet
+            correct_labels = []
+            with open('google_labels.csv', 'r') as fp:
+                s = csv.reader(fp)
+                s = list(s)
+                for label in labels_list:
+                    if [label+";"] not in s:
+                        syns = wordnet.synsets(label)
+                        syns = [i.lemmas()[0].name() for i in syns]
+                        syns = list(set(syns))
+                        syns = [i for i in syns if i+';' in s]
+                        label_suggestions.append(syns)
+                        missing.append(label)
+                    else:
+                        with open('labels_possible_suggested.csv', newline='') as csvfile:
+                            flag = 0
+                            reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+                            for row in reader:
+                                if(label==row[0]):
+                                    possible_additional_labels.append(row[1:])
+                                    flag = 1
+                                    break
+
+                            if(flag == 0):
+                                possible_additional_labels.append(['']*11)
+                        label = label.lower()
+                        correct_labels.append(label)
+                        
             if(mongo_user_labels.count_documents({"email":email})):
-                record = mongo_user_labels.find_one_and_update(filter={"email":email},update={ '$set': { "labels" : labels_list} })
+                record = mongo_user_labels.find_one_and_update({"email":email},{ '$set': { "labels" : correct_labels} })
             else:
                 insert_rec = {
                     "name":name,
                     "email":email,
-                    "labels":labels_list
+                    "labels":correct_labels
                     
                 }
                 record = mongo_user_labels.insert_one(insert_rec)
-            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None"})
+            labels_json_response = json.dumps({"status":"labels updated/inserted","error":"None","wrong_label":missing,"suggestions":label_suggestions,"additional_labels":possible_additional_labels})
             return labels_json_response
         else:
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
             return labels_json_response
     except Exception as Err:
-        error_json_response = json.dumps({"status":"Error","error":Err})
+        error_json_response = json.dumps({"status":"Error","error":'Err'})
         return error_json_response
 
 
 
 
-@extension.route('/api_call', methods=['GET', 'POST'])
+@extension.route('/extension/api_call', methods=['GET', 'POST'])
 #@login_required
 
 def get_blocked_img():
-    images_json_response = request.args.get('images')
-    images_data = json.loads(images_json_response)
+    images_json_response = request.get_json(force = True)
+    print(images_json_response)
+    images_data = images_json_response["images"]
+    #images_data = json.loads(images_json_response)
     email = images_data["data"]["email"]
     session_key = images_data["data"]["session_key"]
 
 
     try:
-        user = User.query.filter_by(email=email).first()
-        if user and user.session == session_key:
-            name = user.name
+        user = mongo_user.find_one({"email":email})
+        if user and user['session'] == session_key:
+            name = user['name']
             
         else:
             error_json_response = json.dumps({"status":"Image labels not returned","error":'Not logged in'})
             return error_json_response
     except Exception as Err:
-        error_json_response = json.dumps({"status":"Image labels not returned","error":Err})
+        error_json_response = json.dumps({"status":"Image labels not returned","error":'Err'})
         return error_json_response        
 
 
@@ -245,37 +285,60 @@ def get_blocked_img():
             "img_urls":[]
             "email":
             "session_key":
+            "website":
         }
     }
     
     '''
     img_url_list = images_data["data"]["img_urls"]
-
-    json_list = [labels.label(i,client) for i in img_url_list]
-
-    
-
-    labels_list = [descr['tags'] for descr in json_list]
-    user_labels = mongo_user_labels.find_one(query={"email":email},projection={"labels"})
-    
-    
+    print("img_url_list :")
+    print(img_url_list)
+    user_labels = mongo_user_labels.find_one({"email":email})
+    website = images_data["data"]["website"]
     blocked_imgs = []
-    for image in labels_list:
-        for label in image:
-            if(label in user_labels["labels"] ):
-                image = true # If Image is to be blocked, replace it with true
+    user_labels["labels"] = [label.lower() for label in user_labels["labels"]]
+    for label in user_labels["labels"]:
+        black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
+        if(black_list_document):
+            blocked_imgs.extend(black_list_document["img_urls"])
+            img_url_list = [x for x in img_url_list if x not in blocked_imgs]
+        
+    tag_list = [labels.label(i,client) for i in img_url_list]
+    print("tag_list")
+    print(tag_list)
+    
+
+    labels_list = [elem['tags'] for elem in tag_list]
+    
+    
+    
+    print(labels_list)
+    #for index,img_list in enumerate(labels_list):
+    for i in range (0,len(img_url_list)):
+        for label in labels_list[i]:
+            #print(label)
+            if label.lower() in user_labels["labels"]:
+                # print(labels_list.index(img_list))
+                if (mongo_black_list_collection.count_documents({"website":website,"label":label})):
+                   black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
+                   img_urls = black_list_document["img_urls"]
+                   img_urls.append(img_url_list[i])
+                   record = mongo_black_list_collection.find_one_and_update({"website":website,"label":label},{ '$set': { "img_urls" : img_urls} })
+                else:
+                   img_list = [img_url_list[i]]
+                   rec = {
+                       "label":label,
+                       "website":website,
+                       "img_urls":img_list
+                   }
+                   mongo_black_list_collection.insert_one(rec)
+                   
+                blocked_imgs.append(img_url_list[i]) # If Image is to be blocked, append it
 
                 
-
-                break
-        if(image != true): 
-            image = false # If image shouldn't be blocked
-
-    for i in range (0,len(labels_list)):
-        if (labels_list[i] == true):
-            blocked_imgs = blocked_imgs + img_url_list[i]
-
-            
+    print(blocked_imgs)
+    blocked_imgs = list(set(blocked_imgs)) #Remove duplicates
+    print(blocked_imgs)
     labels_json_response = json.dumps({"blocked_images":blocked_imgs,"error":"None"})
     return labels_json_response
     
@@ -288,6 +351,17 @@ def get_blocked_img():
 
 
     
+    '''
+    mongo_user:
+
+    {
+        "email":
+        "name":
+        "password":
+        "session":
+    }
+    
+    '''
 
 
 
