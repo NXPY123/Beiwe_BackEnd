@@ -1,1 +1,1 @@
-web: sh -c 'cd ./code/ && exec app:app'
+web: sh -c 'cd ./code/ && exec app'
