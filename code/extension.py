@@ -16,7 +16,7 @@ import string
 import random
 import csv
 from nltk.corpus import wordnet
-
+import path_dir
 # NOTE: set_label() uses google_labels.csv and labels_possible_suggested.csv. Change path of variables incase path of files changed
 
 extension = Blueprint('extension', __name__)
@@ -178,11 +178,11 @@ def extension_logout():
 #@login_required
 
 def set_label():
-
+   
     labels_json_response = request.args.get('labels')
     labels_data = json.loads(labels_json_response)
-    google_labels_csv = 'google_labels.csv'
-    poss_labels_csv = 'labels_possible_suggested.csv'
+    google_labels_csv = path_dir.google_labels_csv
+    poss_labels_csv = path_dir.labels_possible_suggested_csv
 
     #Request JSON Format
     '''

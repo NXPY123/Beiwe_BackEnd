@@ -36,7 +36,7 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    index_path = './templates/index.html'
+    index_path = 'index.html'
     #rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
     return render_template(index_path)
 
@@ -46,7 +46,7 @@ def index():
 #@login_required
 def profile():
     
-    profile_path = './templates/profile.html'
+    
     return render_template('profile.html',name="NPY")
 
 
