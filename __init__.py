@@ -1,20 +1,17 @@
 #from flask_sqlalchemy import SQLAlchemy
 from flask import Flask,request
-import io
+#import io
 import os
-import requests
-import json
+#import requests
+#import json
 # Imports the Google Cloud client library
 from google.cloud import vision_v1
 from google.oauth2 import service_account
-from google.protobuf.json_format import MessageToJson
-from google.protobuf.json_format import MessageToDict
-from google.cloud.vision import AnnotateFileRequest
-import proto
-from labels import label
-#from models import User
-#from flask_migrate import Migrate
-#from flask_login import LoginManager
+#from google.protobuf.json_format import MessageToJson
+#from google.protobuf.json_format import MessageToDict
+#from google.cloud.vision import AnnotateFileRequest
+#import proto
+#from labels import label
 from dotenv import load_dotenv
 import pymongo
 from flask_cors import CORS
@@ -22,7 +19,7 @@ from flask_cors import CORS
 #db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)
 #migrate = Migrate() #Instance of Migrations 
 
-ENV = 'prod'
+#ENV = 'prod'
 
 credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
