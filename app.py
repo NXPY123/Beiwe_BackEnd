@@ -44,7 +44,7 @@ def web_request():
 # IMPORTANT: Set environment variable mongo_password to access mongodb
 from __init__ import create_app
 #from flask_sqlalchemy import SQLAlchemy
-from models import *
+#from models import *
 import pymongo
 import os
 
