@@ -20,11 +20,10 @@ from google.oauth2 import service_account
 #from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,Blueprint
 #from flask_login import login_required, current_user
-
-
 #from models import User
 
 
+# NOTE: redner_template() rquires path of template files. If template file directories change, change path here
 credentials = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
@@ -37,9 +36,9 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    
+    index_path = './templates/index.html'
     #rec_id1 = mongo_black_list_collection.insert_one(emp_rec1)
-    return render_template('index.html')
+    return render_template(index_path)
 
 
 
@@ -47,6 +46,7 @@ def index():
 #@login_required
 def profile():
     
+    profile_path = './templates/profile.html'
     return render_template('profile.html',name="NPY")
 
 
@@ -55,7 +55,7 @@ def profile():
 def web_request():
 
     img_uri = request.args.get('params') 
-
+    
     response = label(img_uri,client) #Get response as dict
     return response
 
