@@ -17,6 +17,8 @@ import random
 import csv
 from nltk.corpus import wordnet
 
+# NOTE: set_label() uses google_labels.csv and labels_possible_suggested.csv. Change path of variables incase path of files changed
+
 extension = Blueprint('extension', __name__)
 
 
@@ -179,7 +181,8 @@ def set_label():
 
     labels_json_response = request.args.get('labels')
     labels_data = json.loads(labels_json_response)
-
+    google_labels_csv = 'google_labels.csv'
+    poss_labels_csv = 'labels_possible_suggested.csv'
 
     #Request JSON Format
     '''
@@ -205,7 +208,7 @@ def set_label():
             missing = []
             label_suggestions = [] #Suggestions for missing user labels using nltk.wordnet
             correct_labels = []
-            with open('google_labels.csv', 'r') as fp:
+            with open(google_labels_csv, 'r') as fp:
                 s = csv.reader(fp)
                 s = list(s)
                 for label in labels_list:
@@ -217,7 +220,7 @@ def set_label():
                         label_suggestions.append(syns)
                         missing.append(label)
                     else:
-                        with open('labels_possible_suggested.csv', newline='') as csvfile:
+                        with open(poss_labels_csv, newline='') as csvfile:
                             flag = 0
                             reader = csv.reader(csvfile, delimiter=';', quotechar='|')
                             for row in reader:
