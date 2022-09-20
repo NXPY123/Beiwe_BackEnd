@@ -26,6 +26,58 @@ credentials = service_account.Credentials.from_service_account_file(os.environ.g
 client = vision_v1.ImageAnnotatorClient(credentials=credentials)
 
 
+def split_correct_suggested_labels(labels_list,google_labels_csv,poss_labels_csv,label_suggestions,missing,possible_additional_labels,correct_labels):
+    
+    
+
+    with open(google_labels_csv, 'r') as fp:
+
+            s = csv.reader(fp)
+            s = list(s)
+            for label in labels_list:
+                if [label+";"] not in s:
+                    syns = wordnet.synsets(label)
+                    syns = [i.lemmas()[0].name() for i in syns]
+                    syns = list(set(syns))
+                    syns = [i for i in syns if i+';' in s]
+                    label_suggestions.append(syns)
+                    missing.append(label)
+                else:
+                    with open(poss_labels_csv, newline='') as csvfile:
+                        flag = 0
+                        reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+                        for row in reader:
+                            if(label==row[0]):
+                                possible_additional_labels.append(row[1:])
+                                flag = 1
+                                break
+
+                        if(flag == 0):
+                            possible_additional_labels.append(['']*11)
+                    label = label.lower()
+                    correct_labels.append(label)
+
+def update_mongo_black_list_collection(labels_list,i,user_labels,website,img_url_list,blocked_imgs):
+     for label in labels_list[i]:
+            #print(label)
+            if label.lower() in user_labels["labels"]:
+                # print(labels_list.index(img_list))
+                if (mongo_black_list_collection.count_documents({"website":website,"label":label})):
+                   black_list_document = mongo_black_list_collection.find_one({"website":website,"label":label})
+                   img_urls = black_list_document["img_urls"]
+                   img_urls.append(img_url_list[i])
+                   record = mongo_black_list_collection.find_one_and_update({"website":website,"label":label},{ '$set': { "img_urls" : img_urls} })
+                else:
+                   img_list = [img_url_list[i]]
+                   rec = {
+                       "label":label,
+                       "website":website,
+                       "img_urls":img_list
+                   }
+                   mongo_black_list_collection.insert_one(rec)
+                   
+                blocked_imgs.append(img_url_list[i]) # If Image is to be blocked, append it
+
 @extension.route('/extension/signup', methods=['GET', 'POST'])
 def extension_signup():
     signup_json_response = request.args.get('signup_data')
@@ -174,6 +226,7 @@ def extension_logout():
 
 
 
+
 @extension.route('/extension/setlabel')
 #@login_required
 
@@ -208,6 +261,10 @@ def set_label():
             missing = []
             label_suggestions = [] #Suggestions for missing user labels using nltk.wordnet
             correct_labels = []
+            possible_additional_labels = []
+            split_correct_suggested_labels(labels_list,google_labels_csv,poss_labels_csv,label_suggestions,missing,possible_additional_labels,correct_labels)
+
+            '''
             with open(google_labels_csv, 'r') as fp:
                 s = csv.reader(fp)
                 s = list(s)
@@ -233,7 +290,7 @@ def set_label():
                                 possible_additional_labels.append(['']*11)
                         label = label.lower()
                         correct_labels.append(label)
-                        
+                '''        
             if(mongo_user_labels.count_documents({"email":email})):
                 record = mongo_user_labels.find_one_and_update({"email":email},{ '$set': { "labels" : correct_labels} })
             else:
@@ -318,6 +375,11 @@ def get_blocked_img():
     print(labels_list)
     #for index,img_list in enumerate(labels_list):
     for i in range (0,len(img_url_list)):
+        
+        
+        update_mongo_black_list_collection(labels_list,i,user_labels,website,img_url_list,blocked_imgs)
+        '''
+
         for label in labels_list[i]:
             #print(label)
             if label.lower() in user_labels["labels"]:
@@ -337,6 +399,7 @@ def get_blocked_img():
                    mongo_black_list_collection.insert_one(rec)
                    
                 blocked_imgs.append(img_url_list[i]) # If Image is to be blocked, append it
+        '''
 
                 
     print(blocked_imgs)
