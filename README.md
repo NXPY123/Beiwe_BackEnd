@@ -39,16 +39,18 @@ Beiwe is a browser extension that prevents the trigger of ***Phobias*** and ***P
 
 
 ## Installation
-1. Download all files to a folder either by the **"Download as ZIP"** button or by **cloning the repo**.
+1. Go to https://github.com/Welf06/Beiwe-Chrome-Extension
 
-2. Open your browser, navigate to 
+2. Download all files to a folder either by the **"Download as ZIP"** button or by **cloning the repo**.
+
+3. Open your browser, navigate to 
 ```
 Extensions -> Manage Extensions -> Developer Mode (and turn it on)
 ```
 
-3. Click on "Load Unpacked" and select the folder where you downloaded/cloned the files.
+4. Click on "Load Unpacked" and select the folder where you downloaded/cloned the files.
 
-4. Navigate to 
+5. Navigate to 
 ```
 Extensions -> Beiwe
 ```
