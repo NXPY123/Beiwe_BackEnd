@@ -56,10 +56,9 @@ maintainers.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported via the collective email address, `moderation@unifiedjs.com`, which
-will go to all moderators, or by contacting individual moderators via
-`richard@unifiedjs.com`, which will go only to Richard Littauer, or to
-`olivia@unifiedjs.com`, which will go only to Olivia Hugger.
+reported by contacting individual moderators via
+`neeraj.yathy@gmail.com` or  
+`ganesh21bcs104@iiitkottayam.ac.in`.
 All complaints will be reviewed and investigated and will result in a response
 that is deemed necessary and appropriate to the circumstances.
 The moderation team is obligated to maintain confidentiality with regard to the
