@@ -307,7 +307,7 @@ def set_label():
             labels_json_response = json.dumps({"status":"user not logged in","error":"Authentication Failed"})
             return labels_json_response
     except Exception as Err:
-        error_json_response = json.dumps({"status":"Error","error":'Err'})
+        error_json_response = json.dumps({"status":"Error","error":Err})
         return error_json_response
 
 
