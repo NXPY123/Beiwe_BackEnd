@@ -8,7 +8,7 @@ auth_py = repo_dir+"./code/auth.py"
 app_py = repo_dir+"./code/app.py"
 init_py = repo_dir+"./code/__init__.py"
 absent_labels_csv = repo_dir+"./code/csv/absent_labels.csv"
-google_labels_csv = repo_dir+"./code/csv/google_labels.csv"
+google_labels_csv = "csv/google_labels.csv" #repo_dir+"./code/csv/google_labels.csv"
 labels_possible_suggested_csv = repo_dir+"./code/csv/labels_possible_suggested.csv"
 
 print(repo_dir)
