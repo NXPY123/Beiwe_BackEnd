@@ -205,6 +205,7 @@ def set_label():
             missing = []
             label_suggestions = [] #Suggestions for missing user labels using nltk.wordnet
             correct_labels = []
+            possible_additional_labels = []
             with open('google_labels.csv', 'r') as fp:
                 s = csv.reader(fp)
                 s = list(s)
