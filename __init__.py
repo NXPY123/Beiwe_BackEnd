@@ -1,22 +1,13 @@
 #from flask_sqlalchemy import SQLAlchemy
-from flask import Flask,request
-import io
+from flask import Flask
 import os
-import requests
-import json
 # Imports the Google Cloud client library
 from google.cloud import vision_v1
 from google.oauth2 import service_account
-from google.protobuf.json_format import MessageToJson
-from google.protobuf.json_format import MessageToDict
-from google.cloud.vision import AnnotateFileRequest
-import proto
-from labels import label
 #from models import User
 #from flask_migrate import Migrate
 #from flask_login import LoginManager
 from dotenv import load_dotenv
-import pymongo
 from flask_cors import CORS
 
 #db = SQLAlchemy() #Instance of SQAlchemy (Object Relational Mapper)

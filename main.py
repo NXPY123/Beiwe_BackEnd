@@ -1,19 +1,11 @@
-
 #from .__init__ import db
-from flask import Flask,request,Blueprint
-import io
+from flask import request,Blueprint
 import os
-import requests
-import json
 # Imports the Google Cloud client library
 from google.cloud import vision_v1
 #from google.oauth2 import servicefrom project 
 #import db, create_app, models_account
-from google.protobuf.json_format import MessageToJson
-from google.protobuf.json_format import MessageToDict
-from google.cloud.vision import AnnotateFileRequest
 from google.oauth2 import service_account
-import proto
 from labels import label
 
 

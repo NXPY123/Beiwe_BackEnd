@@ -1,13 +1,5 @@
-from flask import Flask,request
-import io
-import os
-import requests
-import json
 # Imports the Google Cloud client library
 from google.cloud import vision_v1
-from google.oauth2 import service_account
-from google.protobuf.json_format import MessageToDict
-from google.cloud.vision import AnnotateFileRequest
 import proto
 
 
