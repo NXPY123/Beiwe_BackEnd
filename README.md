@@ -83,6 +83,7 @@ Repeat the installation process again.
     <tr align="center">
         <td><a href="https://github.com/Welf06"><img src="https://avatars.githubusercontent.com/u/85446331?v=4" height="35" width="35" alt="Ganesh Nathan"></a></td>
         <td><a href="https://github.com/NXPY123"><img src="https://avatars.githubusercontent.com/u/46917698?v=4" height="35" width="35" alt="Neeraj P Yatheendran"></a></td>
+         <td><a href="https://github.com/Blaize99"><img src="https://avatars.githubusercontent.com/u/73977277?v=4" height="35" width="35" alt="Blaize Tom"></a></td>
         <td><a href="https://github.com/yashwanth-yasp"><img src="https://avatars.githubusercontent.com/u/100475760?v=4" height="35" width="35" alt="Yashwanth A Doddegowda"></a></td>
         <td><a href="https://github.com/siddharth-2003"><img src="https://avatars.githubusercontent.com/u/98178520?s=40&v=4" height="35" width="35" alt="Siddharth Gupta"></a></td>
     </tr>
