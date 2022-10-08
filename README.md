@@ -90,6 +90,7 @@ Repeat the installation process again.
     <tr>
         <td><a href="https://github.com/Welf06">Welf06</a></td>
         <td><a href="https://github.com/NXPY123">NXPY123</a></td>
+        <td><a href="https://github.com/Blaize99">XPRESSO-R</a></td>
         <td><a href="https://github.com/yashwanth-yasp">yashwanth-yasp</a></td>
         <td><a href="https://github.com/siddharth-2003">siddharth-2003</a></td>
     </tr>
